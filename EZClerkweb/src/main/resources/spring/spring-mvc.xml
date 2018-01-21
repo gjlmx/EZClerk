@@ -11,11 +11,11 @@
                         http://www.springframework.org/schema/mvc/spring-mvc.xsd">
     <!--启用spring的一些annotation -->
     <context:annotation-config/>
-
+    <context:component-scan base-package="priv.lmx.ezclerk"/>
     <!-- 自动扫描该包，使SpringMVC认为包下用了@controller注解的类是控制器 -->
-    <context:component-scan base-package="com.zjut.ssm.controller">
-        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
-    </context:component-scan>
+    <!--<context:component-scan base-package="priv.lmx.ezclerk.controller">-->
+        <!--<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>-->
+    <!--</context:component-scan>-->
 
     <!--HandlerMapping 无需配置，springmvc可以默认启动-->
 

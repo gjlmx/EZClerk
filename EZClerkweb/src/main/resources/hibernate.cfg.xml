@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory >
+        <property name="connection.url">jdbc:mysql://192.168.6.231:3306</property>
+        <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+        <!--<property name="connection.url">jdbc:h2:mem:default</property>-->
+        <!--<property name="connection.driver_class">org.h2.Driver</property>-->
+        <!--<property name="dialect">org.hibernate.dialect.H2Dialect</property>-->
+        <!--&lt;!&ndash; <property name="connection.username"/> &ndash;&gt;-->
+        <!--&lt;!&ndash; <property name="connection.password"/> &ndash;&gt;-->
+
+        <!--&lt;!&ndash; DB schema will be updated if needed &ndash;&gt;-->
+        <!--<property name="hbm2ddl.auto">update</property>-->
+        <!--<mapping resource="priv/lmx/ezclerk/core/entity/TestEntity.hbm.xml"/>-->
+        <!--<mapping class="priv.lmx.ezclerk.core.entity.TestEntity"/>-->
+
+        <mapping class="priv.lmx.ezclerk.core.entity.TestEntity"/>
+        <mapping resource="priv/lmx/ezclerk/core/entity/TestEntity.hbm.xml"/>
+    </session-factory>
+</hibernate-configuration>
