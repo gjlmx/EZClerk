@@ -1,6 +1,5 @@
 package priv.lmx.ezclerk.core.util;
 
-import com.zjut.ssm.controller.HomeController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,7 +7,7 @@ import javax.servlet.*;
 import java.io.IOException;
 
 public class SetCharEncodingFilter implements Filter {
-    private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
+    private static final Logger logger = LoggerFactory.getLogger(SetCharEncodingFilter.class);
 
     public void init(FilterConfig filterConfig) throws ServletException {
 
