@@ -1,0 +1,73 @@
+<template>
+  <el-container>
+    <div class="block">
+      <el-button type="primary" @click="dialogVisible = true" >修改起始日</el-button>
+      <el-date-picker
+        v-model="value2"
+        type="date"
+        align="left"
+        placeholder="选择日期"
+        :picker-options="pickerOptions1">
+      </el-date-picker>
+      <el-dialog title="选择起始日"
+                 width="30%" :visible.sync="dialogVisible">
+        <el-date-picker
+          v-model="value1"
+          type="date"
+          placeholder="选择日期">
+        </el-date-picker>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="repickerStartDate">确 定</el-button>
+        </div>
+      </el-dialog>
+    </div>
+  </el-container>
+</template>
+<script>
+  export default {
+    data() {
+      return {
+        pickerOptions1: {
+          disabledDate(time) {
+            return time.getTime() > Date.now();
+          },
+          shortcuts: [{
+            text: '起始日',
+            onClick(picker) {
+              picker.$emit('pick', new Date());
+            }
+          }, {
+            text: '昨天',
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() - 3600 * 1000 * 24);
+              picker.$emit('pick', date);
+            }
+          }, {
+            text: '一周前',
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', date);
+            }
+          }]
+        },
+        value1: new Date(),
+        value2: '',
+        dialogVisible: false
+      };
+    },
+    methods: {
+        repickerStartDate(){
+          this.dialogVisible = false;
+          this.value2 = this.value1;
+
+        }
+    }
+  };
+</script>
+
+<style>
+  @import url("//unpkg.com/element-ui@2.0.11/lib/theme-chalk/index.css");
+</style>
