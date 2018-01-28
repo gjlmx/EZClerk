@@ -8,6 +8,11 @@ import Api from './api/index.js'
 import Utils from './utils/index.js'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+import AXIOS from 'axios'
+
+
+
+Vue.prototype.$axios = AXIOS
 
 Vue.prototype.$utils = Utils;
 Vue.prototype.$api = Api;

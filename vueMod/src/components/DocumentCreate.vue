@@ -4,25 +4,53 @@
       <span>案件列表</span>
       <el-menu :default-openeds="['1','2','3']">
         <el-submenu index="1">
-        <template slot="title"><i class="el-icon-message"></i>发诉案件</template>
-          <el-menu-item v-for="oneifcaselist in anjianlist" :index=oneifcaselist.index :key = oneifcaselist.id>{{oneifcaselist.name}}
+          <template slot="title"><i class="el-icon-message"></i>发诉案件</template>
+          <el-menu-item v-for="oneifcaselist in anjianlist" :index="oneifcaselist.indexxx" :key=oneifcaselist.id @click="caseInfoLoad(oneifcaselist.id)">
+            {{oneifcaselist.caseNum}}
           </el-menu-item>
         </el-submenu>
-        <el-submenu index="2">
-          <template slot="title"><i class="el-icon-message"></i>审理案件</template>
-          <el-menu-item v-for="oneifcaselist in anjianlist" :index=oneifcaselist.index :key = oneifcaselist.id>{{oneifcaselist.name}}
-          </el-menu-item>
-        </el-submenu>
-        <el-submenu index="3">
-          <template slot="title"><i class="el-icon-message"></i>送达案件</template>
-          <el-menu-item v-for="oneifcaselist in anjianlist" :index=oneifcaselist.index :key = oneifcaselist.id>{{oneifcaselist.name}}
-          </el-menu-item>
-        </el-submenu>
+        <!--<el-submenu index="2">-->
+          <!--<template slot="title"><i class="el-icon-message"></i>审理案件</template>-->
+          <!--<el-menu-item v-for="oneifcaselist in anjianlist" :index=oneifcaselist.index :key=oneifcaselist.id>-->
+            <!--{{oneifcaselist.name}}-->
+          <!--</el-menu-item>-->
+        <!--</el-submenu>-->
+        <!--<el-submenu index="3">-->
+          <!--<template slot="title"><i class="el-icon-message"></i>送达案件</template>-->
+          <!--<el-menu-item v-for="oneifcaselist in anjianlist" :index=oneifcaselist.index :key=oneifcaselist.id>-->
+            <!--{{oneifcaselist.name}}-->
+          <!--</el-menu-item>-->
+        <!--</el-submenu>-->
       </el-menu>
     </el-aside>
     <el-container>
       <el-header height="200px">
+        <el-form ref="caseInfoForm" :model="caseInfoForm" label-width="100px" size="mini" :inline="true">
+          <el-form-item label="案号" style="width: 300px;">
+            <el-input v-model="caseInfoForm.caseNum"></el-input>
+          </el-form-item>
 
+          <!--public static  String CASE_CAUSE_HT = "合同纠纷";-->
+          <!--public static  String CASE_CAUSE_MJJD = "民间借贷纠纷";-->
+          <!--public static  String CASE_CAUSE_SQBQ = "申请诉前财产保全";-->
+          <!--public static  String CASE_CAUSE_JRJK = "金融借款合同纠纷";-->
+          <!--public static  String CASE_CAUSE_BDDL = "不当得利";-->
+          <!--public static  String CASE_CAUSE_ZXYY = "执行异议";-->
+          <!--public static  String CASE_CAUSE_XYK = "信用卡纠纷";-->
+          <el-form-item label="案由"  style="width: 400px;">
+            <el-select v-model="caseInfoForm.anyou" placeholder="请输入案由" filterable>
+              <el-option label="合同纠纷ht" value="合同纠纷"></el-option>
+              <el-option label="民间借贷纠纷mjjd" value="民间借贷纠纷"></el-option>
+              <el-option label="金融借款合同纠纷jrjkht" value="金融借款合同纠纷"></el-option>
+              <el-option label="信用卡纠纷xyk" value="信用卡纠纷"></el-option>
+              <el-option label="执行异议zxyy" value="执行异议"></el-option>
+              <el-option label="申请诉前财产保全sqbq" value="申请诉前财产保全"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="addCase">保存</el-button>
+          </el-form-item>
+        </el-form>
 
       </el-header>
       <el-main height="100%">
@@ -34,9 +62,9 @@
         >
           <el-table-column
 
-            prop="litiPartType"
+            prop="type"
             label="诉讼地位"
-            width="50">
+            width="60">
           </el-table-column>
           <el-table-column
             fixed
@@ -46,9 +74,9 @@
           >
           </el-table-column>
           <el-table-column
-            prop="lawsuitPartiesType"
+            prop="lawsPartType"
             label="类型"
-            width="120">
+            width="60">
           </el-table-column>
           <el-table-column
             prop="phoneNum"
@@ -56,13 +84,20 @@
             width="120">
           </el-table-column>
           <el-table-column
-            prop="address"
-            label="地址"
+            label="代理人信息"
             width="300">
+            <template slot-scope="scope">
+              <el-popover trigger="hover" placement="top">
+                <p>姓名: {{ scope.row.litiRepresInfo }}</p>
+                <div slot="reference" class="name-wrapper">
+                  <el-tag size="medium">代理人信息</el-tag>
+                </div>
+              </el-popover>
+            </template>
           </el-table-column>
           <el-table-column
-            prop="zip"
-            label="代理人信息"
+            prop="addr"
+            label="地址"
             width="300">
           </el-table-column>
           <el-table-column
@@ -75,54 +110,67 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-button type="success" icon="el-icon-plus" @click="dialogFormVisible = true" plain>原告</el-button>
-        <el-button type="warning" icon="el-icon-plus" @click="dialogFormVisible = true" plain>被告</el-button>
-        <el-button type="info" icon="el-icon-plus" @click="dialogFormVisible = true" plain>第三人</el-button>
+        <el-button type="success" icon="el-icon-plus" @click="addLitiParts('原告')" plain>原告</el-button>
+        <el-button type="warning" icon="el-icon-plus" @click="addLitiParts('被告')" plain>被告</el-button>
+        <el-button type="info" icon="el-icon-plus" @click="addLitiParts('第三人')" plain>第三人</el-button>
       </el-main>
-      <el-dialog title="添加当事人信息" :visible.sync="dialogFormVisible">
-        <el-form ref="form" :model="form" label-width="80px">
-          <el-form-item label="活动名称">
-            <el-input v-model="form.name"></el-input>
+      <el-dialog title="添加当事人信息" :visible.sync="litiPartsInfoFormVisible">
+        <el-form ref="litiPartsInfoForm" :model="litiPartsInfoForm" label-width="100px" size="mini" :inline="true">
+
+
+          <el-form-item label="名称" style="width: 300px;">
+            <el-input v-model="litiPartsInfoForm.name"></el-input>
           </el-form-item>
-          <el-form-item label="活动区域">
-            <el-select v-model="form.region" placeholder="请选择活动区域">
-              <el-option label="区域一" value="shanghai"></el-option>
-              <el-option label="区域二" value="beijing"></el-option>
+          <el-form-item label="诉讼地位">
+            <el-select v-model="litiPartsInfoForm.type" placeholder="请选择诉讼地位">
             </el-select>
           </el-form-item>
-          <el-form-item label="活动时间">
-            <el-col :span="11">
-              <el-date-picker type="date" placeholder="选择日期" v-model="form.date1" style="width: 100%;"></el-date-picker>
-            </el-col>
-            <el-col class="line" :span="2">-</el-col>
-            <el-col :span="11">
-              <el-time-picker type="fixed-time" placeholder="选择时间" v-model="form.date2"
-                              style="width: 100%;"></el-time-picker>
-            </el-col>
+          <el-form-item label="当事人类型" style="width: 400px;">
+            <el-select v-model="selectLawsPartType" placeholder="请选择当事人类型" @change="litiPartsLawsPartTypeChange">
+              <el-option label="公民" value="公民"></el-option>
+              <el-option label="法人" value="法人"></el-option>
+              <el-option label="其他组织" value="其他组织"></el-option>
+            </el-select>
           </el-form-item>
-          <el-form-item label="即时配送">
-            <el-switch v-model="form.delivery"></el-switch>
+          <el-form-item label="联系电话" style="width: 300px;">
+            <el-input v-model="litiPartsInfoForm.phone"></el-input>
           </el-form-item>
-          <el-form-item label="活动性质">
-            <el-checkbox-group v-model="form.type">
-              <el-checkbox label="美食/餐厅线上活动" name="type"></el-checkbox>
-              <el-checkbox label="地推活动" name="type"></el-checkbox>
-              <el-checkbox label="线下主题活动" name="type"></el-checkbox>
-              <el-checkbox label="单纯品牌曝光" name="type"></el-checkbox>
-            </el-checkbox-group>
+          <el-form-item label="住址" style="width: 300px;">
+            <el-input v-model="litiPartsInfoForm.addr"></el-input>
           </el-form-item>
-          <el-form-item label="特殊资源">
-            <el-radio-group v-model="form.resource">
-              <el-radio label="线上品牌商赞助"></el-radio>
-              <el-radio label="线下场地免费"></el-radio>
-            </el-radio-group>
+          <!--<el-form-item label="age" style="width: 300px;">-->
+            <!--<el-input v-model="litiPartsInfoForm.age" v-bind:disabled="!lawsPartTypeIsPson"></el-input>-->
+          <!--</el-form-item>-->
+          <el-form-item label="公民身份号码" style="width: 300px;">
+            <el-input v-model="litiPartsInfoForm.gmsfhm" v-bind:disabled="!lawsPartTypeIsPson"
+                      @change="getCsrqSex" clearable ></el-input>
           </el-form-item>
-          <el-form-item label="活动形式">
-            <el-input type="textarea" v-model="form.desc"></el-input>
+
+          <el-form-item label="民族" style="width: 300px;">
+            <el-input v-model="litiPartsInfoForm.minzu" v-bind:disabled="!lawsPartTypeIsPson"></el-input>
           </el-form-item>
+          <el-form-item label="性别" style="width: 300px;">
+            <el-input v-model="litiPartsInfoForm.sex" v-bind:disabled="!lawsPartTypeIsPson"></el-input>
+          </el-form-item>
+          <el-form-item label="出生日期" style="width: 300px;">
+            <el-date-picker
+              v-model="litiPartsInfoForm.csrq"
+              type="date"
+              v-bind:disabledDate="!lawsPartTypeIsPson"
+              placeholder="选择日期">
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item label="信用代码" style="width: 300px;">
+            <el-input v-model="litiPartsInfoForm.tyshxydm" v-bind:disabled="lawsPartTypeIsPson"></el-input>
+          </el-form-item>
+          <el-form-item label="法定代表人" style="width: 300px;">
+            <el-input v-model="litiPartsInfoForm.fddbr" v-bind:disabled="lawsPartTypeIsPson"></el-input>
+          </el-form-item>
+
+
           <el-form-item>
-            <el-button type="primary" @click="onSubmit">立即创建</el-button>
-            <el-button>取消</el-button>
+            <el-button type="primary" @click="addLP">保存</el-button>
+            <el-button @click="resetLpf">取消</el-button>
           </el-form-item>
         </el-form>
       </el-dialog>
@@ -161,7 +209,26 @@
 
 <script>
   export default {
+    created() {
+      // this.$api.get('json/litipart', null, r => {
+      //   this.tableData = r;
+      // })
+          this.$api.get("allCase", null, r=>{
+            this.anjianlist = r;
+            console.log(r)
+      });
+
+
+
+    },
+
     methods: {
+      caseInfoLoad(caseId){
+        this.$api.get("getCaseByid",{id:caseId},r=>{
+          this.caseInfoForm = r;
+          console.log(r)
+        })
+      },
       tableRowClassName({row, rowIndex}) {
         if (row.litiPartType === "原告") {
           return 'success-row';
@@ -171,8 +238,8 @@
         return '';
       },
       handleClick(row) {
-        this.dialogFormVisible = true;
-        this.form.name = row.name;
+        this.litiPartsInfoFormVisible = true;
+        this.litiPartsInfoForm.name = row.name;
         console.log(row);
       },
       handleDelSdr(row) {
@@ -181,67 +248,92 @@
       onSubmit() {
         console.log();
       },
+      addLitiParts(dsrlx) {
+        this.litiPartsInfoFormVisible = true;
+        this.litiPartsInfoForm = {};
+        this.litiPartsInfoForm.type = dsrlx;
+      },
+      getCsrqSex() {
+        var gmsfhm = this.litiPartsInfoForm.gmsfhm;
+        console.log(gmsfhm);
+        var birthdayno, birthdaytemp
+        if (gmsfhm.length == 18) {
+          birthdayno = gmsfhm.substring(6, 14)
+        } else if (gmsfhm.length == 15) {
+          birthdaytemp = gmsfhm.substring(6, 12)
+          birthdayno = "19" + birthdaytemp
+        } else {
+          return;
+        }
+        var birthday = birthdayno.substring(0, 4) + "-" + birthdayno.substring(4, 6) + "-" + birthdayno.substring(6, 8);
+        this.litiPartsInfoForm.csrq = new Date(birthday);
+        if (parseInt(gmsfhm.substr(16, 1)) % 2 == 1) {
+//男
+          this.litiPartsInfoForm.sex = "男";
+        } else {
+          this.litiPartsInfoForm.sex = "女";
+//女
+        }
+      },
+      addCase(){
+        this.$api.post("saveCase", this.caseInfoForm, r=>{
+          console.log(r)
+        });
+
+      },
+      addLP() {
+        this.$api.post('json/addlitipart', this.litiPartsInfoForm, r => {
+          console.log(r)
+        })
+      },
+      resetLpf(){
+        // this.$refs["litiPartsInfoForm"].resetFields();
+        this.litiPartsInfoForm = {},
+          this.litiPartsInfoFormVisible = false;
+      }
+      ,
+      litiPartsLawsPartTypeChange() {
+        this.litiPartsInfoForm.lawsPartType = this.selectLawsPartType;
+        if (this.selectLawsPartType === "公民") {
+          this.litiPartsInfoForm.isPson = true;
+          this.lawsPartTypeIsPson = true;
+        } else {
+          this.litiPartsInfoForm.isPson = false;
+          this.lawsPartTypeIsPson = false;
+        }
+        console.log(this.litiPartsInfoForm.lawsPartType);
+      }
+      ,
       checkList: ['选中且禁用', '复选框 A']
     },
     data() {
       return {
-        tableData: [{
-          litiPartType: '原告',
-          name: '王小虎',
-          lawsuitPartiesType: '上海',
-          phoneNum: '1231231313',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }, {
-          litiPartType: '原告',
-          name: '王小虎',
-          lawsuitPartiesType: '上海',
-          phoneNum: '1231231313',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }, {
-          litiPartType: '被告',
-          name: '王小虎',
-          lawsuitPartiesType: '上海',
-          phoneNum: '1231231313',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }, {
-          litiPartType: '被告',
-          name: '王小虎',
-          lawsuitPartiesType: '上海',
-          phoneNum: '1231231313',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }, {
-          litiPartType: '第三人',
-          name: '王小虎',
-          lawsuitPartiesType: '上海',
-          phoneNum: '1231231313',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }, {
-          litiPartType: '第三人',
-          name: '王小虎',
-          lawsuitPartiesType: '上海',
-          phoneNum: '1231231313',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }],
+        tableData: [],
         dialogTableVisible: false,
-        dialogFormVisible: false,
+        litiPartsInfoFormVisible: false,
         labelPosition: 'right',
-        form: {
-          name: '',
-          region: '',
-          date1: '',
-          date2: '',
-          delivery: false,
-          type: [],
-          resource: '',
-          desc: ''
+        selectLawsPartType: '公民',
+        lawsPartTypeIsPson: true,
+        litiPartsInfoForm: {
+          name: null,
+          type: "原告",
+          lawsPartType: "公民",
+          addr: "青岛市崂山区深圳路111号",
+          //"litiParts" : null,
+          isPson: true,
+          age: 23,
+          csrq: 1516979636398,
+          gmsfhm: "370202192301011111",
+          minzu: "汉族",
+          sex: "男",
+          tyshxydm: null,
+          fddbr: null
         },
         formLabelWidth: '120px',
+        caseInfoForm:{
+            caseNum:'',
+            anyou:''
+        },
         activeName: 'first',
         options3: [{
           label: '发诉材料',
@@ -287,11 +379,7 @@
           }]
         }],
         value7: '',
-        anjianlist: [{
-          name: '1111', index: '1'
-        }, {
-          name: '222', index: '1'
-        }],
+        anjianlist: [],
         stepDatas: [
           {description: 'jsifjsjfosj', title: "1"},
           {description: 'sdfsdf', title: "步骤er"},

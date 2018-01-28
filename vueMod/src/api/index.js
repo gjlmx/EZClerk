@@ -1,5 +1,5 @@
 // 配置API接口地址
-var root = 'https://cnodejs.org/api/v1'
+var root = 'http://localhost:8080/'
 // 引用axios
 var axios = require('axios')
 // 自定义判断元素类型JS
@@ -44,25 +44,30 @@ function apiAxios (method, url, params, success, failure) {
     baseURL: root,
     withCredentials: false
   })
-    .then(function (res) {
-      if (res.data.success === true) {
-        if (success) {
-          success(res.data)
-        }
-      } else {
-        if (failure) {
-          failure(res.data)
-        } else {
-          window.alert('error: ' + JSON.stringify(res.data))
-        }
-      }
+    .then(function (response) {
+      success(response.data)
     })
-    .catch(function (err) {
-      let res = err.response
-      if (err) {
-        window.alert('api error, HTTP CODE: ' + res.status)
-      }
-    })
+    // .then(function (response) {
+    //  //success(response.data)
+    //
+    //   //if (res.data.success === true) {
+    //    // if (success) {
+    //    //    success(res.data)
+    //    //  }
+    //   // } else {
+    //   //   if (failure) {
+    //   //     failure(res.data)
+    //   //   } else {
+    //   //     window.alert('error: ' + JSON.stringify(res.data))
+    //   //   }
+    //   // }
+    // })
+    // .catch(function (err) {
+    //   let res = err.response
+    //   if (err) {
+    //     window.alert('api error, HTTP CODE: ' + res.data())
+    //   }
+    // })
 }
 
 // 返回在vue模板中的调用接口
