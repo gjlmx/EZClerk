@@ -25,4 +25,5 @@ public class CaseLog {
     private Long id;
     private Date date;
     private String logDeteil;
+    //private LitiRepre litiRepre;
 }

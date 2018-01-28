@@ -10,11 +10,7 @@ import java.util.List;
  */
 public interface IEzclerkRep extends JpaRepository<CourtCase, Long> {
 
-//    CourtCase getCaseInfobyNum(String caseNum);
-//
-//    List<CourtCase> getAllCases(Long userId);
-//
-//    Boolean saveCourtCase(List<CourtCase> cases);
+    CourtCase findByCaseName(String caseName);
+    //    CourtCase getCaseInfobyNum(String caseNum);
 
-//    Boolean saveOneCourtCase(CourtCase courtCase);
 }

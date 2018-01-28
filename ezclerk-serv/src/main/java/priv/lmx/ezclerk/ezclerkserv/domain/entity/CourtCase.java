@@ -23,8 +23,11 @@ public class CourtCase {
     @Id
     @GeneratedValue
     private Long id;
+    private String anyou;
+    private String caseNum;
     private String caseName;
     private String caseFalName;
+    private String indexxx = "1";
     private String niandu;
     @OneToMany
     private Set<LitiPart> litiParts;
