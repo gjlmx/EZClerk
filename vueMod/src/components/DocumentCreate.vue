@@ -5,39 +5,21 @@
       <el-menu :default-openeds="['1','2','3']">
         <el-submenu index="1">
           <template slot="title"><i class="el-icon-message"></i>发诉案件</template>
-          <el-menu-item v-for="oneifcaselist in anjianlist" :index="oneifcaselist.indexxx" :key=oneifcaselist.id @click="caseInfoLoad(oneifcaselist.id)">
+          <el-menu-item v-for="oneifcaselist in anjianlist" :index="oneifcaselist.indexxx" :key=oneifcaselist.id
+                        @click="caseInfoLoad(oneifcaselist.caseId)">
             {{oneifcaselist.caseNum}}
           </el-menu-item>
         </el-submenu>
-        <!--<el-submenu index="2">-->
-          <!--<template slot="title"><i class="el-icon-message"></i>审理案件</template>-->
-          <!--<el-menu-item v-for="oneifcaselist in anjianlist" :index=oneifcaselist.index :key=oneifcaselist.id>-->
-            <!--{{oneifcaselist.name}}-->
-          <!--</el-menu-item>-->
-        <!--</el-submenu>-->
-        <!--<el-submenu index="3">-->
-          <!--<template slot="title"><i class="el-icon-message"></i>送达案件</template>-->
-          <!--<el-menu-item v-for="oneifcaselist in anjianlist" :index=oneifcaselist.index :key=oneifcaselist.id>-->
-            <!--{{oneifcaselist.name}}-->
-          <!--</el-menu-item>-->
-        <!--</el-submenu>-->
-      </el-menu>
+       </el-menu>
     </el-aside>
     <el-container>
       <el-header height="200px">
         <el-form ref="caseInfoForm" :model="caseInfoForm" label-width="100px" size="mini" :inline="true">
-          <el-form-item label="案号" style="width: 300px;">
+          <el-form-item label="案号">
             <el-input v-model="caseInfoForm.caseNum"></el-input>
           </el-form-item>
 
-          <!--public static  String CASE_CAUSE_HT = "合同纠纷";-->
-          <!--public static  String CASE_CAUSE_MJJD = "民间借贷纠纷";-->
-          <!--public static  String CASE_CAUSE_SQBQ = "申请诉前财产保全";-->
-          <!--public static  String CASE_CAUSE_JRJK = "金融借款合同纠纷";-->
-          <!--public static  String CASE_CAUSE_BDDL = "不当得利";-->
-          <!--public static  String CASE_CAUSE_ZXYY = "执行异议";-->
-          <!--public static  String CASE_CAUSE_XYK = "信用卡纠纷";-->
-          <el-form-item label="案由"  style="width: 400px;">
+          <el-form-item label="案由">
             <el-select v-model="caseInfoForm.anyou" placeholder="请输入案由" filterable>
               <el-option label="合同纠纷ht" value="合同纠纷"></el-option>
               <el-option label="民间借贷纠纷mjjd" value="民间借贷纠纷"></el-option>
@@ -47,6 +29,22 @@
               <el-option label="申请诉前财产保全sqbq" value="申请诉前财产保全"></el-option>
             </el-select>
           </el-form-item>
+          <el-form-item label="立案日期">
+            <el-date-picker
+              v-model="caseInfoForm.liandate"
+              type="date"
+              placeholder="选择日期"
+            >
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item label="开庭日期">
+            <el-date-picker
+              v-model="caseInfoForm.kaitingdate"
+              type="date"
+              placeholder="选择日期"
+            >
+            </el-date-picker>
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="addCase">保存</el-button>
           </el-form-item>
@@ -55,19 +53,16 @@
       </el-header>
       <el-main height="100%">
         <el-table
-          border
           :data="tableData"
           style="width: 100%"
           :row-class-name="tableRowClassName"
         >
           <el-table-column
-
             prop="type"
             label="诉讼地位"
-            width="60">
+            width="80">
           </el-table-column>
           <el-table-column
-            fixed
             prop="name"
             label="名称"
             width="170"
@@ -76,16 +71,16 @@
           <el-table-column
             prop="lawsPartType"
             label="类型"
-            width="60">
+            width="80">
           </el-table-column>
           <el-table-column
-            prop="phoneNum"
+            prop="phone"
             label="联系电话"
             width="120">
           </el-table-column>
           <el-table-column
             label="代理人信息"
-            width="300">
+            width="100">
             <template slot-scope="scope">
               <el-popover trigger="hover" placement="top">
                 <p>姓名: {{ scope.row.litiRepresInfo }}</p>
@@ -103,10 +98,11 @@
           <el-table-column
             fixed="right"
             label="操作"
-            width="100">
+            width="170px">
             <template slot-scope="scope">
               <el-button @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
               <el-button type="text" size="small" @click="handleDelSdr(scope.row)">删除</el-button>
+              <el-button type="text" size="small" @click="createfasudoc(scope.row)">发诉文书</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -125,7 +121,7 @@
             <el-select v-model="litiPartsInfoForm.type" placeholder="请选择诉讼地位">
             </el-select>
           </el-form-item>
-          <el-form-item label="当事人类型" style="width: 400px;">
+          <el-form-item label="当事人类型">
             <el-select v-model="selectLawsPartType" placeholder="请选择当事人类型" @change="litiPartsLawsPartTypeChange">
               <el-option label="公民" value="公民"></el-option>
               <el-option label="法人" value="法人"></el-option>
@@ -138,14 +134,10 @@
           <el-form-item label="住址" style="width: 300px;">
             <el-input v-model="litiPartsInfoForm.addr"></el-input>
           </el-form-item>
-          <!--<el-form-item label="age" style="width: 300px;">-->
-            <!--<el-input v-model="litiPartsInfoForm.age" v-bind:disabled="!lawsPartTypeIsPson"></el-input>-->
-          <!--</el-form-item>-->
           <el-form-item label="公民身份号码" style="width: 300px;">
             <el-input v-model="litiPartsInfoForm.gmsfhm" v-bind:disabled="!lawsPartTypeIsPson"
-                      @change="getCsrqSex" clearable ></el-input>
+                      @change="getCsrqSex"></el-input>
           </el-form-item>
-
           <el-form-item label="民族" style="width: 300px;">
             <el-input v-model="litiPartsInfoForm.minzu" v-bind:disabled="!lawsPartTypeIsPson"></el-input>
           </el-form-item>
@@ -176,20 +168,26 @@
       </el-dialog>
 
       <el-footer direction="horizontal">
-        <el-select v-model="value7" multiple filterable>
-          <el-option-group
-            v-for="group in options3"
-            :key="group.label"
-            :label="group.label">
-            <el-option
-              v-for="item in group.options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-option-group>
-        </el-select>
-        <el-button type="primary" icon="el-icon-edit">文书生成</el-button>
+        <!--<el-select v-model="value7" multiple filterable>-->
+          <!--<el-option-group-->
+            <!--v-for="group in options3"-->
+            <!--:key="group.label"-->
+            <!--:label="group.label">-->
+            <!--<el-option-->
+              <!--v-for="item in group.options"-->
+              <!--:key="item.value"-->
+              <!--:label="item.label"-->
+              <!--:value="item.value">-->
+            <!--</el-option>-->
+          <!--</el-option-group>-->
+        <!--</el-select>-->
+        <!--<el-button type="primary" icon="el-icon-edit">文书生成</el-button>-->
+
+
+
+
+
+
       </el-footer>
     </el-container>
     <el-aside width="20%">
@@ -210,32 +208,35 @@
 <script>
   export default {
     created() {
-      // this.$api.get('json/litipart', null, r => {
-      //   this.tableData = r;
-      // })
-          this.$api.get("allCase", null, r=>{
-            this.anjianlist = r;
-            console.log(r)
+      this.$api.get("allCase", null, r => {
+        this.anjianlist = r;
       });
-
-
-
     },
 
     methods: {
-      caseInfoLoad(caseId){
-        this.$api.get("getCaseByid",{id:caseId},r=>{
+      caseInfoLoad(caseId) {
+        this.$api.get("getCaseByid", {'caseId': caseId}, r => {
           this.caseInfoForm = r;
+          this.currentCaseId = r.caseId;
+          this.tableData = r.litiParts;
           console.log(r)
         })
       },
       tableRowClassName({row, rowIndex}) {
-        if (row.litiPartType === "原告") {
+        if (row.type === "原告") {
           return 'success-row';
-        } else if (row.litiPartType === "被告") {
+        } else if (row.type === "被告") {
           return 'warning-row';
         }
         return '';
+      },
+      createfasudoc(row) {
+        this.$api.file("createDocTest", {
+          "caseId":row.caseId,
+          "litiPartId" : row.id,
+          "docType":1
+        }, r => {
+        });
       },
       handleClick(row) {
         this.litiPartsInfoFormVisible = true;
@@ -274,22 +275,25 @@
           this.litiPartsInfoForm.sex = "女";
 //女
         }
+        console.log(this.litiPartsInfoForm);
       },
-      addCase(){
-        this.$api.post("saveCase", this.caseInfoForm, r=>{
+      addCase() {
+        this.$api.post("saveCase", this.caseInfoForm, r => {
           console.log(r)
         });
 
       },
       addLP() {
-        this.$api.post('json/addlitipart', this.litiPartsInfoForm, r => {
+        this.litiPartsInfoForm.lawsPartType = this.selectLawsPartType;
+        this.litiPartsInfoForm.caseId = this.currentCaseId;
+        this.$api.post('addlitipart', this.litiPartsInfoForm, r => {
           console.log(r)
         })
       },
-      resetLpf(){
+      resetLpf() {
         // this.$refs["litiPartsInfoForm"].resetFields();
-        this.litiPartsInfoForm = {},
-          this.litiPartsInfoFormVisible = false;
+        this.litiPartsInfoForm = {};
+        this.litiPartsInfoFormVisible = false;
       }
       ,
       litiPartsLawsPartTypeChange() {
@@ -308,6 +312,7 @@
     },
     data() {
       return {
+        currentCaseId:'',
         tableData: [],
         dialogTableVisible: false,
         litiPartsInfoFormVisible: false,
@@ -315,24 +320,14 @@
         selectLawsPartType: '公民',
         lawsPartTypeIsPson: true,
         litiPartsInfoForm: {
-          name: null,
-          type: "原告",
-          lawsPartType: "公民",
-          addr: "青岛市崂山区深圳路111号",
-          //"litiParts" : null,
-          isPson: true,
-          age: 23,
-          csrq: 1516979636398,
-          gmsfhm: "370202192301011111",
-          minzu: "汉族",
-          sex: "男",
-          tyshxydm: null,
-          fddbr: null
+
         },
         formLabelWidth: '120px',
-        caseInfoForm:{
-            caseNum:'',
-            anyou:''
+        caseInfoForm: {
+          caseNum: '',
+          anyou: '',
+          lianDate: '',
+          kaitingDate:''
         },
         activeName: 'first',
         options3: [{

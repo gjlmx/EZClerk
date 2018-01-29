@@ -2,12 +2,14 @@
 var root = 'http://localhost:8080/'
 // 引用axios
 var axios = require('axios')
+
 // 自定义判断元素类型JS
-function toType (obj) {
+function toType(obj) {
   return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()
 }
+
 // 参数过滤函数
-function filterNull (o) {
+function filterNull(o) {
   for (var key in o) {
     if (o[key] === null) {
       delete o[key]
@@ -22,6 +24,7 @@ function filterNull (o) {
   }
   return o
 }
+
 /*
   接口处理函数
   这个函数每个项目都是不一样的，我现在调整的是适用于
@@ -32,7 +35,7 @@ function filterNull (o) {
   另外，不同的项目的处理方法也是不一致的，这里出错就是简单的alert
 */
 
-function apiAxios (method, url, params, success, failure) {
+function apiAxios(method, url, params, success, failure) {
   if (params) {
     params = filterNull(params)
   }
@@ -47,27 +50,23 @@ function apiAxios (method, url, params, success, failure) {
     .then(function (response) {
       success(response.data)
     })
-    // .then(function (response) {
-    //  //success(response.data)
-    //
-    //   //if (res.data.success === true) {
-    //    // if (success) {
-    //    //    success(res.data)
-    //    //  }
-    //   // } else {
-    //   //   if (failure) {
-    //   //     failure(res.data)
-    //   //   } else {
-    //   //     window.alert('error: ' + JSON.stringify(res.data))
-    //   //   }
-    //   // }
-    // })
-    // .catch(function (err) {
-    //   let res = err.response
-    //   if (err) {
-    //     window.alert('api error, HTTP CODE: ' + res.data())
-    //   }
-    // })
+}
+
+function apiAxiosFile(url, params, success, failure) {
+  if (params) {
+    params = filterNull(params)
+  }
+  axios({
+    method: 'GET',
+    url: url,
+    data: params,
+    baseURL: root,
+    withCredentials: false,
+    data:File
+  })
+    .then(function (response) {
+      success(response.data)
+    })
 }
 
 // 返回在vue模板中的调用接口
@@ -83,5 +82,8 @@ export default {
   },
   delete: function (url, params, success, failure) {
     return apiAxios('DELETE', url, params, success, failure)
+  },
+  file: function (url, params, success, failure) {
+    return apiAxiosFile(url, params, success, failure)
   }
 }
