@@ -22,7 +22,7 @@ import java.util.Set;
 public class CourtCase {
     @Id
     @GeneratedValue
-    private Long id;
+    private Long caseId;
     private String anyou;
     private String caseNum;
     private String caseName;
@@ -34,6 +34,7 @@ public class CourtCase {
     private String type;
     private Date liandate;
     private Date jieandate;
+    private Date kaitingdate;
     private Boolean simp = Boolean.TRUE;//简易程序
     @OneToMany
     private List<CaseLog> caseLogs;

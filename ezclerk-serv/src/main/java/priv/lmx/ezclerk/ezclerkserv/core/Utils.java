@@ -28,12 +28,22 @@ public class Utils {
     /**
      *
      * @param courtCase
-     * @param hashMap
      */
-    public static void caseinfoFormat(CourtCase courtCase, HashMap<String, Object> hashMap){
-
+    public static HashMap<String, Object> caseinfoFormat(CourtCase courtCase){
+        HashMap<String, Object> map = new  HashMap<>();
+        map.put("anhao",courtCase.getCaseNum());
+        map.put("anyou",courtCase.getAnyou());
+        map.put("dangshirenname","a");
+        map.put("dangshirenzhusuo","a");
+        map.put("chuanhuanshijian","a");
+        map.put("chuanpiaoshijian","a");
+        return map;
 
     }
+
+
+
+
 
     /**
      * 文件下载
@@ -64,7 +74,9 @@ public class Utils {
             // 中文文件名支持
             String encodedfileName = new String(fileName.getBytes("GBK"), "ISO8859-1");
             response.setContentType("application/msword");
-            response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedfileName + "\"");
+            //response.setContentType("application/x-msdownload");
+            //response.setContentType("application/x-download");response.setContentType("application/x-msdownload")
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
         } catch (UnsupportedEncodingException e) {
         }
     }

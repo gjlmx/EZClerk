@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import priv.lmx.ezclerk.ezclerkserv.core.Constant;
-import priv.lmx.ezclerk.ezclerkserv.domain.IEzclerkRep;
+import priv.lmx.ezclerk.ezclerkserv.domain.ICourtCaseRep;
 import priv.lmx.ezclerk.ezclerkserv.domain.entity.CourtCase;
 import priv.lmx.ezclerk.ezclerkserv.domain.entity.LitiPart;
 import priv.lmx.ezclerk.ezclerkserv.domain.entity.LitiRepre;
@@ -23,7 +23,7 @@ public class HelloWorldController {
 
 
     @Autowired
-    public IEzclerkRep iEzclerkRep;
+    public ICourtCaseRep iEzclerkRep;
 
     @RequestMapping("json/courtCase")
     public CourtCase json() {
@@ -39,8 +39,6 @@ public class HelloWorldController {
     public String add(@RequestBody LitiPart litiPart){
         System.out.println(litiPart.toString());
         return "succ";
-
-
     }
     @RequestMapping("json/litipart")
     public List<LitiPart> jsonb() {

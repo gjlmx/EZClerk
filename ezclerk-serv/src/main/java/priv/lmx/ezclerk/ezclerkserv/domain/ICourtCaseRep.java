@@ -8,9 +8,8 @@ import java.util.List;
 /**
  * @lmx
  */
-public interface IEzclerkRep extends JpaRepository<CourtCase, Long> {
+public interface ICourtCaseRep extends JpaRepository<CourtCase, Long> {
 
     CourtCase findByCaseName(String caseName);
-    //    CourtCase getCaseInfobyNum(String caseNum);
 
 }
