@@ -10,5 +10,5 @@ import java.util.Set;
  * @lmx
  */
 public interface ILitiPartRep extends JpaRepository<LitiPart, Long> {
-    Set<LitiPart> findByCaseId(Long caseId);
+    List<LitiPart> findByCaseId(Long caseId);
 }

@@ -20,11 +20,11 @@ import java.util.List;
 public class LitiPart {
     @Id
     @GeneratedValue
-    private Long id;
+    private Long litiPartId;
     private Long caseId;
     private String name;
-    private String type;//公民法人其他组织
-    private String lawsPartType;//原告、被告、第三人
+    private String type;//原告、被告、第三人
+    private String lawsPartType;//公民法人其他组织
     private String addr;
     private String phone;
     @OneToMany

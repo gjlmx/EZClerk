@@ -30,7 +30,7 @@ public class CourtCase {
     private String indexxx = "1";
     private String niandu;
     @OneToMany
-    private Set<LitiPart> litiParts;
+    private List<LitiPart> litiParts;
     private String type;
     private Date liandate;
     private Date jieandate;
