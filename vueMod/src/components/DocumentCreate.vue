@@ -15,8 +15,8 @@
     <el-container>
       <el-header height="200px">
         <el-form ref="caseInfoForm" :model="caseInfoForm" label-width="100px" size="mini" :inline="true">
-          <el-form-item label="案号">
-            <el-input v-model="caseInfoForm.caseNum"></el-input>
+          <el-form-item label="案号" >
+            <el-input v-model="caseInfoForm.caseNum" style="width: 140%;"></el-input>
           </el-form-item>
 
           <el-form-item label="案由">
@@ -113,20 +113,19 @@
       <el-dialog title="添加当事人信息" :visible.sync="litiPartsInfoFormVisible">
         <el-form ref="litiPartsInfoForm" :model="litiPartsInfoForm" label-width="100px" size="mini" :inline="true">
 
-
-          <el-form-item label="名称" style="width: 300px;">
-            <el-input v-model="litiPartsInfoForm.name"></el-input>
-          </el-form-item>
-          <el-form-item label="诉讼地位">
-            <el-select v-model="litiPartsInfoForm.type" placeholder="请选择诉讼地位">
-            </el-select>
-          </el-form-item>
           <el-form-item label="当事人类型">
             <el-select v-model="selectLawsPartType" placeholder="请选择当事人类型" @change="litiPartsLawsPartTypeChange">
               <el-option label="公民" value="公民"></el-option>
               <el-option label="法人" value="法人"></el-option>
               <el-option label="其他组织" value="其他组织"></el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item label="诉讼地位">
+            <el-select v-model="litiPartsInfoForm.type" placeholder="请选择诉讼地位">
+            </el-select>
+          </el-form-item>
+          <el-form-item label="名称" style="width: 300px;">
+            <el-input v-model="litiPartsInfoForm.name"></el-input>
           </el-form-item>
           <el-form-item label="联系电话" style="width: 300px;">
             <el-input v-model="litiPartsInfoForm.phone"></el-input>
@@ -136,7 +135,7 @@
           </el-form-item>
           <el-form-item label="公民身份号码" style="width: 300px;">
             <el-input v-model="litiPartsInfoForm.gmsfhm" v-bind:disabled="!lawsPartTypeIsPson"
-                      @change="getCsrqSex"></el-input>
+                      @blur="getCsrqSex"></el-input>
           </el-form-item>
           <el-form-item label="民族" style="width: 300px;">
             <el-input v-model="litiPartsInfoForm.minzu" v-bind:disabled="!lawsPartTypeIsPson"></el-input>
@@ -144,21 +143,24 @@
           <el-form-item label="性别" style="width: 300px;">
             <el-input v-model="litiPartsInfoForm.sex" v-bind:disabled="!lawsPartTypeIsPson"></el-input>
           </el-form-item>
-          <el-form-item label="出生日期" style="width: 300px;">
+          <el-form-item label="出生日期">
             <el-date-picker
               v-model="litiPartsInfoForm.csrq"
               type="date"
-              v-bind:disabledDate="!lawsPartTypeIsPson"
+              v-bind:disabled="!lawsPartTypeIsPson"
               placeholder="选择日期">
             </el-date-picker>
           </el-form-item>
           <el-form-item label="信用代码" style="width: 300px;">
             <el-input v-model="litiPartsInfoForm.tyshxydm" v-bind:disabled="lawsPartTypeIsPson"></el-input>
           </el-form-item>
-          <el-form-item label="法定代表人" style="width: 300px;">
-            <el-input v-model="litiPartsInfoForm.fddbr" v-bind:disabled="lawsPartTypeIsPson"></el-input>
+          <el-form-item label="法定代表人" style="width: 700px;">
+            <el-input v-model="litiPartsInfoForm.fddbr" v-bind:disabled="lawsPartTypeIsPson"
+                      style="width: 500px;"></el-input>
           </el-form-item>
-
+          <!--<el-form-item label="代理人信息" style="width: 700px;">-->
+          <!--<el-input v-model=""style="width: 500px;"></el-input>-->
+          <!--</el-form-item>-->
 
           <el-form-item>
             <el-button type="primary" @click="addLP">保存</el-button>
@@ -216,7 +218,7 @@
         this.$api.file({
           "caseId": row.caseId,
           "litiPartId": row.litiPartId,
-          "lawsDocType": 1
+          "lawsDocType": 3
         });
       },
       handleClick(row) {
@@ -232,12 +234,11 @@
       },
       addLitiParts(dsrlx) {
         this.litiPartsInfoFormVisible = true;
-        this.litiPartsInfoForm = {};
+        this.litiPartsInfoForm = {sex: "男", csrq: new Date()};
         this.litiPartsInfoForm.type = dsrlx;
       },
       getCsrqSex() {
         var gmsfhm = this.litiPartsInfoForm.gmsfhm;
-        console.log(gmsfhm);
         var birthdayno, birthdaytemp
         if (gmsfhm.length == 18) {
           birthdayno = gmsfhm.substring(6, 14)
@@ -256,19 +257,30 @@
           this.litiPartsInfoForm.sex = "女";
 //女
         }
-        console.log(this.litiPartsInfoForm);
+        // console.log(this.litiPartsInfoForm);
       },
+
       addCase() {
+        var inputCaseNum = parseInt(this.caseInfoForm.caseNum, 10);
+        if (this.$utils.isRealNum(inputCaseNum)) {
+          inputCaseNum = "（2018）鲁0202民初" + inputCaseNum + "号";
+          this.caseInfoForm.caseNum = inputCaseNum;
+        }
         this.$api.post("saveCase", this.caseInfoForm, r => {
-          console.log(r)
+          //console.log(r)
+          this.$api.get("allCase", null, r => {
+            this.anjianlist = r;
+          });
         });
+
 
       },
       addLP() {
         this.litiPartsInfoForm.lawsPartType = this.selectLawsPartType;
         this.litiPartsInfoForm.caseId = this.currentCaseId;
         this.$api.post('addlitipart', this.litiPartsInfoForm, r => {
-          console.log(r)
+          this.litiPartsInfoFormVisible = false;
+          this.caseInfoLoad(this.currentCaseId)
         })
       },
       resetLpf() {
@@ -300,7 +312,7 @@
         labelPosition: 'right',
         selectLawsPartType: '公民',
         lawsPartTypeIsPson: true,
-        litiPartsInfoForm: {},
+        litiPartsInfoForm: {sex: "男", csrq: new Date()},
         formLabelWidth: '120px',
         caseInfoForm: {
           caseNum: '',
