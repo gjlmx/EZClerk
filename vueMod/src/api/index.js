@@ -56,15 +56,19 @@ function apiAxiosFile(url, params, success, failure) {
   if (params) {
     params = filterNull(params)
   }
+
+
   axios({
     method: 'GET',
     url: url,
     data: params,
     baseURL: root,
-    withCredentials: false,
-    data:File
+    withCredentials: false
   })
+
+
     .then(function (response) {
+
       success(response.data)
     })
 }
@@ -83,7 +87,8 @@ export default {
   delete: function (url, params, success, failure) {
     return apiAxios('DELETE', url, params, success, failure)
   },
-  file: function (url, params, success, failure) {
-    return apiAxiosFile(url, params, success, failure)
+  file: function (params) {
+    var url = root+"createDoc?caseId=" + params.caseId + "&litiPartId=" + params.litiPartId +"&lawsDocType=" + params.lawsDocType;
+    window.open(url)
   }
 }

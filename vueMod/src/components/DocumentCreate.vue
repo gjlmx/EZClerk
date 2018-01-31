@@ -10,7 +10,7 @@
             {{oneifcaselist.caseNum}}
           </el-menu-item>
         </el-submenu>
-       </el-menu>
+      </el-menu>
     </el-aside>
     <el-container>
       <el-header height="200px">
@@ -40,7 +40,7 @@
           <el-form-item label="开庭日期">
             <el-date-picker
               v-model="caseInfoForm.kaitingdate"
-              type="date"
+              type="datetime"
               placeholder="选择日期"
             >
             </el-date-picker>
@@ -168,25 +168,6 @@
       </el-dialog>
 
       <el-footer direction="horizontal">
-        <!--<el-select v-model="value7" multiple filterable>-->
-          <!--<el-option-group-->
-            <!--v-for="group in options3"-->
-            <!--:key="group.label"-->
-            <!--:label="group.label">-->
-            <!--<el-option-->
-              <!--v-for="item in group.options"-->
-              <!--:key="item.value"-->
-              <!--:label="item.label"-->
-              <!--:value="item.value">-->
-            <!--</el-option>-->
-          <!--</el-option-group>-->
-        <!--</el-select>-->
-        <!--<el-button type="primary" icon="el-icon-edit">文书生成</el-button>-->
-
-
-
-
-
 
       </el-footer>
     </el-container>
@@ -231,11 +212,11 @@
         return '';
       },
       createfasudoc(row) {
-        this.$api.file("createDocTest", {
-          "caseId":row.caseId,
-          "litiPartId" : row.id,
-          "docType":1
-        }, r => {
+        console.log(row)
+        this.$api.file({
+          "caseId": row.caseId,
+          "litiPartId": row.litiPartId,
+          "lawsDocType": 1
         });
       },
       handleClick(row) {
@@ -312,22 +293,20 @@
     },
     data() {
       return {
-        currentCaseId:'',
+        currentCaseId: '',
         tableData: [],
         dialogTableVisible: false,
         litiPartsInfoFormVisible: false,
         labelPosition: 'right',
         selectLawsPartType: '公民',
         lawsPartTypeIsPson: true,
-        litiPartsInfoForm: {
-
-        },
+        litiPartsInfoForm: {},
         formLabelWidth: '120px',
         caseInfoForm: {
           caseNum: '',
           anyou: '',
           lianDate: '',
-          kaitingDate:''
+          kaitingDate: ''
         },
         activeName: 'first',
         options3: [{
