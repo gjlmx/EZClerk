@@ -1,5 +1,6 @@
 <template>
-  <div id = "dateCalculator">
+  <div id = "dateCalculator" class="test">
+  <a>日期计算</a>
   <el-container>
     <el-header>
       <div class="block">
@@ -13,7 +14,7 @@
         </el-date-picker>
 
         <a>期间:</a>
-        <el-select v-model="days" placeholder="下拉选择或输入"
+        <el-select v-model="days" placeholder="下拉选择或直接输入"
                    filterable
                    clearable
                    allow-create
@@ -118,5 +119,6 @@
   };
 </script>
 <style>
-  @import url("//unpkg.com/element-ui@2.0.11/lib/theme-chalk/index.css");
+  /*@import url("//unpkg.com/element-ui@2.0.11/lib/theme-chalk/index.css");*/
+
 </style>
