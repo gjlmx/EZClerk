@@ -7,8 +7,10 @@ import freemarker.template.TemplateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import priv.lmx.ezclerk.ezclerkserv.core.Utils;
+import priv.lmx.ezclerk.ezclerkserv.domain.ICaseLogRep;
 import priv.lmx.ezclerk.ezclerkserv.domain.ICourtCaseRep;
 import priv.lmx.ezclerk.ezclerkserv.domain.ILitiPartRep;
+import priv.lmx.ezclerk.ezclerkserv.domain.entity.CaseLog;
 import priv.lmx.ezclerk.ezclerkserv.domain.entity.CourtCase;
 import priv.lmx.ezclerk.ezclerkserv.domain.entity.LawsDocType;
 import priv.lmx.ezclerk.ezclerkserv.domain.entity.LitiPart;
@@ -35,6 +37,9 @@ public class CaseinfoService {
     @Autowired
     ILitiPartRep iLitiPartRep;
 
+    @Autowired
+    ICaseLogRep iCaseLogRep;
+
 
     public CourtCase getCaseByid(Long caseId) {
         CourtCase courtCase = iEzclerkRep.findOne(caseId);
@@ -43,21 +48,18 @@ public class CaseinfoService {
         return courtCase;
     }
 
-    public File createLawsDoc(HttpServletResponse response,Long caseId, LawsDocType lawsDocType) {
-        if(!lawsDocType.getOnly()){
-            List<LitiPart> litiParts = iLitiPartRep.findByCaseId(caseId);
-            Iterator<LitiPart> it = litiParts.iterator();
-            while (it.hasNext()) {
-                LitiPart litiPart = it.next();
-                createLawsDoc(response,litiPart.getCaseId(),litiPart.getLitiPartId(), lawsDocType);
-            }
-            return null;
-        }else {
-            return createLawsDoc(response,getCaseByid(caseId),new LitiPart(),lawsDocType);
-        }
+    public List<CaseLog> getCaseLogs(Long caseId){
+        return iCaseLogRep.findByCaseId(caseId);
+    }
+
+    public CaseLog saveCaseLogs(CaseLog caseLog){
+        return iCaseLogRep.save(caseLog);
     }
 
     public File createLawsDoc(HttpServletResponse response,Long caseId, Long  litiPartId, LawsDocType lawsDocType) {
+        if(litiPartId == null){
+            return createLawsDoc(response,getCaseByid(caseId),null, lawsDocType);
+        }
         return createLawsDoc(response,getCaseByid(caseId), iLitiPartRep.findOne(litiPartId), lawsDocType);
     }
 
@@ -72,8 +74,7 @@ public class CaseinfoService {
             baos.write(str.getBytes());
             stringWriter.flush();
             stringWriter.close();
-            String filename = courtCase.getCaseNum() + "-" + litiPart.getName()+ "-" + lawsDocType.getName() + ".xml";
-            Utils.renderWord(response,baos.toByteArray(),filename);
+            Utils.renderWord(response,baos.toByteArray(),Utils.getfileName(courtCase,litiPart,lawsDocType));
         } catch (IOException e) {
             e.printStackTrace();
         } catch (TemplateException e) {
@@ -82,4 +83,16 @@ public class CaseinfoService {
         return null;
     }
 
+    public CourtCase saveCase(CourtCase courtCase) {
+        Utils.caseInfoFormat(courtCase);
+        return iEzclerkRep.save(courtCase);
+    }
+
+    public List<CourtCase> findAllCases() {
+        return iEzclerkRep.findAll();
+    }
+
+    public LitiPart saveLP(LitiPart litiPart) {
+        return iLitiPartRep.save(litiPart);
+    }
 }

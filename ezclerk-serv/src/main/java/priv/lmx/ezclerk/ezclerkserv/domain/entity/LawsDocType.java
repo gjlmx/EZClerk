@@ -1,7 +1,8 @@
 package priv.lmx.ezclerk.ezclerkserv.domain.entity;
 
 public enum LawsDocType {
-    CHUANPIAO(1,"传票","chuanpiao.ftl",false),YINGSUTONGZHISHU(2,"应诉通知书","",false),FASU(3,"发诉材料","fasu.ftl",false);
+    CHUANPIAO(1,"传票","chuanpiao.ftl",false),YINGSUTONGZHISHU(2,"应诉通知书","",false),FASU(3,"发诉材料","fasu.ftl",false)
+    ,BAOQUAN(4,"保全文书","baoquan.ftl",true);
 
     private Integer id;
     private String name;

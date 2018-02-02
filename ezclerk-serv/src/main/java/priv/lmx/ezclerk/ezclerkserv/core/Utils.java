@@ -1,6 +1,7 @@
 package priv.lmx.ezclerk.ezclerkserv.core;
 
 import priv.lmx.ezclerk.ezclerkserv.domain.entity.CourtCase;
+import priv.lmx.ezclerk.ezclerkserv.domain.entity.LawsDocType;
 import priv.lmx.ezclerk.ezclerkserv.domain.entity.LitiPart;
 import priv.lmx.ezclerk.ezclerkserv.domain.entity.LitiRepre;
 
@@ -15,71 +16,88 @@ import java.util.*;
  */
 public class Utils {
 
-    public static String litiRepreFormate(LitiRepre litiRepre){
-            litiRepre.setDescription(litiRepre.getName() + ","+litiRepre.getDanwei()+litiRepre.getType());
-            return litiRepre.getDescription();
+    public static String litiRepreFormate(LitiRepre litiRepre) {
+        litiRepre.setDescription(litiRepre.getName() + "," + litiRepre.getDanwei() + litiRepre.getType());
+        return litiRepre.getDescription();
     }
 
-    public static String litiPartFormate(LitiPart litiPart){
-      return "";
+    public static String litiPartFormate(LitiPart litiPart) {
+        return "";
     }
 
 
     /**
-     *
      * @param courtCase
      */
-    public static HashMap<String, Object> caseinfoFormat(CourtCase courtCase, LitiPart litiPart){
-        HashMap<String, Object> map = new  HashMap<>();
-        map.put("anhao",courtCase.getCaseNum());
-        map.put("anyou",courtCase.getAnyou());
-        map.put("tarName",litiPart.getName());
-        map.put("dsrdizhi",litiPart.getAddr());
-        map.put("yingsuanming",courtCase.getCaseFalName());
-        map.put("fasuriqi",dateFarmate(new Date()));
-        map.put("kaitingshijian",timeFarmate(courtCase.getKaitingdate()));
+    public static HashMap<String, Object> caseinfoFormat(CourtCase courtCase, LitiPart litiPart) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("anhao", courtCase.getCaseNum());
+        map.put("anyou", courtCase.getAnyou());
+        map.put("yingsuanming", courtCase.getCaseFalName());
+        map.put("fasuriqi", dateFarmate(new Date()));
+        map.put("kaitingshijian", timeFarmate(courtCase.getKaitingdate()));
+        if(courtCase.getHavePreservation()){
+
+        }
+//        ${casePreservationInfoDetil} :  保全裁定保全详情
+//        ${baoquancaidinganming} :  保全裁定案名
+//        ${casePreservationcaiding} :  裁定主文
+        if (litiPart != null) {
+            map.put("tarName", litiPart.getName());
+            map.put("dsrdizhi", litiPart.getAddr());
+        }
         return map;
     }
 
-    private static String timeFarmate(Date date){
-        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy年MM月dd日HH时mm分");
-        return simpleDateFormat.format(date);
-    }
-
-    private static String dateFarmate(Date date){
-        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy年MM月dd日");
-        return simpleDateFormat.format(date);
+    public static String getfileName(CourtCase courtCase, LitiPart litiPart, LawsDocType lawsDocType){
+        if (litiPart == null){
+            return courtCase.getCaseNum() + "-" + lawsDocType.getName() + ".xml";
+        }
+       return courtCase.getCaseNum() + "-" + litiPart.getName()+ "-" + lawsDocType.getName() + ".xml";
     }
 
 
-    public static void caseInfoFormat(CourtCase courtCase){
-        String caseFalName="";
-        String ygs="";
-        String bgs="";
-        String dsr="";
+    private static String timeFarmate(Date date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日HH时mm分");
+        return simpleDateFormat.format(date);
+    }
+
+    private static String dateFarmate(Date date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
+        return simpleDateFormat.format(date);
+    }
+
+
+    public static void caseInfoFormat(CourtCase courtCase) {
+        String caseFalName = "";
+        String ygs = "";
+        String bgs = "";
+        String dsr = "";
         List<LitiPart> litiParts = courtCase.getLitiParts();
-        if (litiParts == null){
+        if (litiParts == null) {
             return;
         }
         Iterator<LitiPart> it = litiParts.iterator();
         while (it.hasNext()) {
             LitiPart litiPart = it.next();
-            if(litiPart.getType().equals("原告")){
-                ygs = ygs + "原告" + litiPart.getName()+ "、";
-            }else if(litiPart.getType().equals("被告")){
-                bgs = bgs + "被告" + litiPart.getName()+ "、";
-            }else if (litiPart.getType().equals("第三人")){
+            if (litiPart.getType().equals("原告")) {
+                ygs = ygs + "原告" + litiPart.getName() + "、";
+            } else if (litiPart.getType().equals("被告")) {
+                bgs = bgs + "被告" + litiPart.getName() + "、";
+            } else if (litiPart.getType().equals("第三人")) {
                 dsr = dsr + "第三人" + litiPart.getName() + "、";
             }
         }
-        ygs = ygs.length()>0? ygs.substring(0,ygs.length()-1):ygs;
+        ygs = ygs.length() > 0 ? ygs.substring(0, ygs.length() - 1) : ygs;
         bgs = bgs + dsr;
-        bgs = bgs.length()>0? bgs.substring(0,bgs.length()-1):bgs;
-        caseFalName = ygs + "诉" +bgs + courtCase.getAnyou();
+        bgs = bgs.length() > 0 ? bgs.substring(0, bgs.length() - 1) : bgs;
+        caseFalName = ygs + "诉" + bgs + courtCase.getAnyou();
         courtCase.setCaseFalName(caseFalName);
     }
+
     /**
      * 文件下载
+     *
      * @param response
      * @param bytes
      * @param filename
@@ -99,6 +117,7 @@ public class Utils {
 
     /**
      * 文件命名
+     *
      * @param response
      * @param fileName
      */

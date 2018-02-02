@@ -36,8 +36,7 @@ public class CourtCase {
     private Date jieandate;
     private Date kaitingdate;
     private Boolean simp = Boolean.TRUE;//简易程序
-    @OneToMany
-    private List<CaseLog> caseLogs;
-
-
+    private Boolean havePreservation = Boolean.FALSE;//是否有保全
+    private String  casePreservationInfoDetil;
+    private String  casePreservationcaiding;
 }

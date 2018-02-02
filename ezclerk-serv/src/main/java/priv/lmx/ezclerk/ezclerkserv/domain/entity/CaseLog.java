@@ -22,8 +22,9 @@ import java.util.Date;
 public class CaseLog {
     @Id
     @GeneratedValue
-    private Long id;
+    private Long caseLogId;
     private Date date;
     private String logDeteil;
-    //private LitiRepre litiRepre;
+    private Long caseId;
+    private Boolean complete;
 }
