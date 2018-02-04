@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import priv.lmx.ezclerk.ezclerkserv.core.Constant;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -28,7 +29,8 @@ public class CourtCase {
     private String caseName;
     private String caseFalName;
     private String indexxx = "1";
-    private Long userId;
+    private Long userId = 1L;
+    private Integer caseStatus= Constant.CASE_STATUS_FASU;
     private String niandu;
     @OneToMany
     private List<LitiPart> litiParts;

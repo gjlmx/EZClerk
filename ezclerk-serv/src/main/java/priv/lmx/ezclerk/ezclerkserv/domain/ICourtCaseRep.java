@@ -12,4 +12,6 @@ public interface ICourtCaseRep extends JpaRepository<CourtCase, Long> {
 
     CourtCase findByCaseName(String caseName);
 
+    List<CourtCase> findByUserIdAndCaseStatus(Long userId, Integer caseStatus);
+
 }

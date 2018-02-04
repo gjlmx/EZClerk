@@ -37,4 +37,13 @@ public class Constant {
     public static String LITI_REPRE_TYPE_JQS="近亲属";
     public static String LITI_REPRE_TYPE_YG="员工";
 
+    //案件流程状态
+    public static Integer CASE_STATUS_FASU= 1;
+    public static Integer CASE_STATUS_DAIKAITING = 2;
+    public static Integer CASE_STATUS_DAIPANJUE=3;
+    public static Integer CASE_STATUS_JIEAN = 4;
+    public static Integer CASE_STATUS_GUIDANG = 5;
+    public static Integer CASE_STATUS_FINISH = 6;
+
+
 }

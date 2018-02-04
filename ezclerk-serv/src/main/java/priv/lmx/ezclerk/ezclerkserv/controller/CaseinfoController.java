@@ -3,10 +3,7 @@ package priv.lmx.ezclerk.ezclerkserv.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import priv.lmx.ezclerk.ezclerkserv.domain.entity.CaseLog;
-import priv.lmx.ezclerk.ezclerkserv.domain.entity.CourtCase;
-import priv.lmx.ezclerk.ezclerkserv.domain.entity.LawsDocType;
-import priv.lmx.ezclerk.ezclerkserv.domain.entity.LitiPart;
+import priv.lmx.ezclerk.ezclerkserv.domain.entity.*;
 import priv.lmx.ezclerk.ezclerkserv.service.CaseinfoService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +35,14 @@ public class CaseinfoController {
     @RequestMapping("allCase")
     public List<CourtCase> getCases() {
         return caseinfoService.findAllCases();
+    }
+
+    @RequestMapping("allCaseByStatus")
+    public List<CourtCase> getCasesByStatus(@RequestParam(value = "caseStatus") String caseStatus) {
+        Integer status = Integer.parseInt(caseStatus);
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserId(1L);
+        return caseinfoService.findCasesByStatus(userInfo, status);
     }
 
     @RequestMapping(value = "getCaseByid", method = RequestMethod.GET)

@@ -10,20 +10,15 @@ import priv.lmx.ezclerk.ezclerkserv.core.Utils;
 import priv.lmx.ezclerk.ezclerkserv.domain.ICaseLogRep;
 import priv.lmx.ezclerk.ezclerkserv.domain.ICourtCaseRep;
 import priv.lmx.ezclerk.ezclerkserv.domain.ILitiPartRep;
-import priv.lmx.ezclerk.ezclerkserv.domain.entity.CaseLog;
-import priv.lmx.ezclerk.ezclerkserv.domain.entity.CourtCase;
-import priv.lmx.ezclerk.ezclerkserv.domain.entity.LawsDocType;
-import priv.lmx.ezclerk.ezclerkserv.domain.entity.LitiPart;
+import priv.lmx.ezclerk.ezclerkserv.domain.entity.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Service
 public class CaseinfoService {
@@ -32,7 +27,7 @@ public class CaseinfoService {
     Configuration configuration;
 
     @Autowired
-    ICourtCaseRep iEzclerkRep;
+    ICourtCaseRep iCourtCaseRep;
 
     @Autowired
     ILitiPartRep iLitiPartRep;
@@ -42,7 +37,7 @@ public class CaseinfoService {
 
 
     public CourtCase getCaseByid(Long caseId) {
-        CourtCase courtCase = iEzclerkRep.findOne(caseId);
+        CourtCase courtCase = iCourtCaseRep.findOne(caseId);
         List<LitiPart> litiParts = iLitiPartRep.findByCaseId(caseId);
         courtCase.setLitiParts(litiParts);
         return courtCase;
@@ -85,14 +80,18 @@ public class CaseinfoService {
 
     public CourtCase saveCase(CourtCase courtCase) {
         Utils.caseInfoFormat(courtCase);
-        return iEzclerkRep.save(courtCase);
+        return iCourtCaseRep.save(courtCase);
     }
 
     public List<CourtCase> findAllCases() {
-        return iEzclerkRep.findAll();
+        return iCourtCaseRep.findAll();
     }
 
     public LitiPart saveLP(LitiPart litiPart) {
         return iLitiPartRep.save(litiPart);
+    }
+
+    public List<CourtCase> findCasesByStatus(UserInfo userInfo, Integer status) {
+        return iCourtCaseRep.findByUserIdAndCaseStatus(userInfo.getUserId(), status);
     }
 }
