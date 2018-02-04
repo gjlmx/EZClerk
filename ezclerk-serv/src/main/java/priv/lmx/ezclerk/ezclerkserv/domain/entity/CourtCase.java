@@ -28,6 +28,7 @@ public class CourtCase {
     private String caseName;
     private String caseFalName;
     private String indexxx = "1";
+    private Long userId;
     private String niandu;
     @OneToMany
     private List<LitiPart> litiParts;
