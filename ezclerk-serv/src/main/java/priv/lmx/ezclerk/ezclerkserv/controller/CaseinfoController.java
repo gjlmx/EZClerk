@@ -2,9 +2,8 @@ package priv.lmx.ezclerk.ezclerkserv.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import priv.lmx.ezclerk.ezclerkserv.core.Utils;
-import priv.lmx.ezclerk.ezclerkserv.domain.ICourtCaseRep;
-import priv.lmx.ezclerk.ezclerkserv.domain.ILitiPartRep;
+
+import priv.lmx.ezclerk.ezclerkserv.domain.entity.CaseLog;
 import priv.lmx.ezclerk.ezclerkserv.domain.entity.CourtCase;
 import priv.lmx.ezclerk.ezclerkserv.domain.entity.LawsDocType;
 import priv.lmx.ezclerk.ezclerkserv.domain.entity.LitiPart;
@@ -13,7 +12,6 @@ import priv.lmx.ezclerk.ezclerkserv.service.CaseinfoService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 public class CaseinfoController {
@@ -21,22 +19,25 @@ public class CaseinfoController {
     @Autowired
     public CaseinfoService caseinfoService;
 
-    @Autowired
-    public ICourtCaseRep iEzclerkRep;
-
-    @Autowired
-    public ILitiPartRep iLitiPartRep;
-
     @RequestMapping("saveCase")
     public CourtCase saveCase(@RequestBody CourtCase courtCase) {
-        Utils.caseInfoFormat(courtCase);
-        iEzclerkRep.save(courtCase);
-        return courtCase;
+        return caseinfoService.saveCase(courtCase);
+    }
+
+    @RequestMapping("getCaseLogs")
+    public List<CaseLog> getCaseLogs(@RequestParam(value = "caseId") String id){
+        Long caseId = Long.parseLong(id);
+        return caseinfoService.getCaseLogs(caseId);
+    }
+
+    @RequestMapping("saveCaseLogs")
+    public CaseLog saveCaseLogs(@RequestBody CaseLog caseLog){
+        return caseinfoService.saveCaseLogs(caseLog);
     }
 
     @RequestMapping("allCase")
     public List<CourtCase> getCases() {
-        return iEzclerkRep.findAll();
+        return caseinfoService.findAllCases();
     }
 
     @RequestMapping(value = "getCaseByid", method = RequestMethod.GET)
@@ -49,30 +50,9 @@ public class CaseinfoController {
     @RequestMapping("addlitipart")
     public LitiPart add(@RequestBody LitiPart litiPart) {
         if (litiPart.getCaseId() != null) {
-            return iLitiPartRep.save(litiPart);
+            return caseinfoService.saveLP(litiPart);
         }
         return null;
-    }
-
-
-    public void createDoc(HttpServletResponse response, @RequestBody Map map) {
-        LawsDocType lawsDocType;
-        switch (1) {
-            case 1:
-                lawsDocType = LawsDocType.CHUANPIAO;
-                break;
-            case 2:
-                lawsDocType = LawsDocType.YINGSUTONGZHISHU;
-                break;
-
-            default:
-                lawsDocType = LawsDocType.CHUANPIAO;
-                break;
-        }
-
-        Long caseIdL = ((Integer) map.get("caseId")).longValue();
-        Long litiPartIdL = ((Integer) map.get("litiPartId")).longValue();
-        caseinfoService.createLawsDoc(response, caseIdL, litiPartIdL, lawsDocType);
     }
 
     @RequestMapping(value = "createDoc")
@@ -86,6 +66,10 @@ public class CaseinfoController {
                 break;
             case 2:
                 lawsDocTypeL = LawsDocType.YINGSUTONGZHISHU;
+                break;
+            case 4:
+                lawsDocTypeL = LawsDocType.BAOQUAN;
+
                 break;
             default:
                 lawsDocTypeL = LawsDocType.FASU;

@@ -1,6 +1,6 @@
 <template>
-  <el-container>
-    <el-aside width="20%" color='Warning'>
+  <el-container style="height: 800px; border: 1px solid #eee">
+    <el-aside width="20%">
       <span>案件列表</span>
       <el-menu :default-openeds="['1','2','3']">
         <el-submenu index="1">
@@ -15,7 +15,7 @@
     <el-container>
       <el-header height="200px">
         <el-form ref="caseInfoForm" :model="caseInfoForm" label-width="100px" size="mini" :inline="true">
-          <el-form-item label="案号" >
+          <el-form-item label="案号">
             <el-input v-model="caseInfoForm.caseNum" style="width: 140%;"></el-input>
           </el-form-item>
 
@@ -45,9 +45,52 @@
             >
             </el-date-picker>
           </el-form-item>
+          <el-form-item label="是否保全">
+            <el-switch
+              v-model="caseInfoForm.havePreservation"
+              active-text="有保全"
+              inactive-text="无保全"
+              @change="casePreservationChange">
+            </el-switch>
+            <el-button type="text" size="small" @click="createbaoquandoc()">保全文书</el-button>
+          </el-form-item>
+          <el-form-item>
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="addCase">保存</el-button>
           </el-form-item>
+          <el-dialog title="案件保全信息" :visible.sync="casePreservationInfoFormVisible">
+            <el-form ref="casePreservationInfo" :model="casePreservationInfo" size="mini" :inline="true">
+              <el-form-item label="申请人">
+                <el-select v-model="casePreservationInfo.shenqingren" placeholder="请选择当事人" multiple>
+                  <el-option v-for="(onelp, index) in this.tableData" :label="onelp.name"
+                             :key="index" :value="onelp.name">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="于">
+                <el-date-picker type="date" v-model="casePreservationInfo.shenqingdate" placeholder="选择日期">
+                </el-date-picker>
+              </el-form-item>
+              <el-form-item label="向本院申请财产保全，请求依法冻结被申请人">
+                <el-select v-model="casePreservationInfo.beishenqingren" placeholder="请选择当事人" multiple>
+                  <el-option v-for="(onelp, index) in this.tableData" :label="onelp.name"
+                             :key="index" :value="onelp.name">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="银行存款">
+                <el-input v-model="casePreservationInfo.shenqingbiaodi" placeholder="请输入内容"></el-input>
+              </el-form-item>
+              <el-form-item label="万元或查封同等价值的财产。">
+                <el-input v-model="casePreservationInfo.danbaocaichan" placeholder="请输入担保信息"></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="saveCasePreservationInfo()">保存</el-button>
+              </el-form-item>
+            </el-form>
+          </el-dialog>
+
         </el-form>
 
       </el-header>
@@ -55,8 +98,7 @@
         <el-table
           :data="tableData"
           style="width: 100%"
-          :row-class-name="tableRowClassName"
-        >
+          :row-class-name="tableRowClassName">
           <el-table-column
             prop="type"
             label="诉讼地位"
@@ -169,27 +211,56 @@
         </el-form>
       </el-dialog>
 
-      <el-footer direction="horizontal">
-
+      <el-footer direction="horizontal" height="200px">
+        <date-calculator class="test"></date-calculator>
       </el-footer>
     </el-container>
-    <el-aside width="20%">
+    <el-aside width="30%" >
+      <el-header height = "200">
+        <a>记事</a>
+        <el-input
+          type="textarea"
+          :rows="5"
+          placeholder="请输入内容"
+          v-model="newLogs">
+        </el-input>
+        <el-button type="primary" @click="saveCaseLog">保存</el-button>
+      </el-header>
+      <div height = "600">
+        <!--<el-steps direction="vertical" :active=caseLogsData.length-1>-->
+          <!--<el-step-->
+            <!--v-for="(caseLog,index) in caseLogsData"-->
+            <!--:description="caseLog.logDeteil"-->
+            <!--:title="caseLog.date+''"-->
+            <!--:key="index"-->
+          <!--&gt;sdfsdfasfsdf</el-step>-->
+        <!--</el-steps>-->
+        <el-table
+          border
+          :data="caseLogsData"
+          >
+          <el-table-column
+            prop="date"
+            label="日期"
+            width="180">
+          </el-table-column>
 
+          <el-table-column
+            prop="logDeteil"
+            label="纪要">
+          </el-table-column>
+        </el-table>
+      </div>
 
-      <el-steps direction="vertical" :active=stepActive>
-        <el-step
-          v-for="(stepData,index) in stepDatas"
-          :description="stepData.description"
-          :title="stepData.title"
-          :key="index"
-        ></el-step>
-      </el-steps>
     </el-aside>
   </el-container>
 </template>
 
 <script>
+  import DateCalculator from './DateCalculator';
+
   export default {
+    components: {DateCalculator},
     created() {
       this.$api.get("allCase", null, r => {
         this.anjianlist = r;
@@ -202,7 +273,18 @@
           this.caseInfoForm = r;
           this.currentCaseId = r.caseId;
           this.tableData = r.litiParts;
-          console.log(r)
+        });
+        this.getCaseLog(caseId)
+      },
+      getCaseLog(caseId){
+        this.$api.get("getCaseLogs", {'caseId': caseId}, r => {
+          this.caseLogsData = r;
+        })
+      },
+      saveCaseLog(){
+        this.$api.post("saveCaseLogs", {'caseId': this.currentCaseId,'logDeteil': this.newLogs,'date' : new Date()}, r => {
+          this.getCaseLog(this.currentCaseId);
+          this.newLogs = '';
         })
       },
       tableRowClassName({row, rowIndex}) {
@@ -212,6 +294,12 @@
           return 'warning-row';
         }
         return '';
+      },
+      createbaoquandoc(){
+        this.$api.file({
+          "caseId": this.currentCaseId,
+          "lawsDocType": 4
+        });
       },
       createfasudoc(row) {
         console.log(row)
@@ -251,15 +339,11 @@
         var birthday = birthdayno.substring(0, 4) + "-" + birthdayno.substring(4, 6) + "-" + birthdayno.substring(6, 8);
         this.litiPartsInfoForm.csrq = new Date(birthday);
         if (parseInt(gmsfhm.substr(16, 1)) % 2 == 1) {
-//男
           this.litiPartsInfoForm.sex = "男";
         } else {
           this.litiPartsInfoForm.sex = "女";
-//女
         }
-        // console.log(this.litiPartsInfoForm);
       },
-
       addCase() {
         var inputCaseNum = parseInt(this.caseInfoForm.caseNum, 10);
         if (this.$utils.isRealNum(inputCaseNum)) {
@@ -272,7 +356,31 @@
             this.anjianlist = r;
           });
         });
-
+      },
+      casePreservationChange() {//案件保全
+        if (!this.caseInfoForm.havePreservation) {
+          this.casePreservationInfoFormVisible = true;
+        }
+      },
+      saveCasePreservationInfo() {
+        var sqdate = this.casePreservationInfo.shenqingdate;
+        var bsqrs = this.casePreservationInfo.beishenqingren;
+        var bsqrxx = '';
+        for (var bsqr in bsqrs) {
+          bsqrxx = bsqrxx + '被申请人' + bsqrs[bsqr] + "、"
+        }
+        bsqrxx = bsqrxx.slice(0, -1);
+        var date = sqdate.getFullYear() + '年' + (sqdate.getMonth() + 1) + '月' + sqdate.getDate() + "日";
+        var detail = '申请人' + this.casePreservationInfo.shenqingren + '于' + date +
+          '向本院申请财产保全，请求依法冻结' + bsqrxx + '银行存款' + this.casePreservationInfo.shenqingbiaodi
+          + '万元或查封同等价值的财产。' + this.casePreservationInfo.danbaocaichan + '。'
+        var caidingzhuwen = '冻结' + bsqrxx + '银行存款' + this.casePreservationInfo.shenqingbiaodi
+          + '万元或查封、扣押同等价值的其他财产。';
+        this.caseInfoForm.casePreservationInfoDetil = detail;
+        this.caseInfoForm.casePreservationcaiding = caidingzhuwen;
+        this.caseInfoForm.havePreservation = true;
+        this.casePreservationInfoFormVisible = false;
+        addCase();
 
       },
       addLP() {
@@ -305,10 +413,24 @@
     },
     data() {
       return {
+        casePreservationInfo: {
+          shenqingren: '',
+          shenqingdate: new Date(),
+          beishenqingren: [],
+          shenqingbiaodi: 0,
+          danbaoren: '申请人',
+          danbaocaichan: ''
+        },
         currentCaseId: '',
-        tableData: [],
+        caseLogsData: [],
+        stepActive: 5,
+        newLogs:'',
+
+
+        tableData:[],
         dialogTableVisible: false,
         litiPartsInfoFormVisible: false,
+        casePreservationInfoFormVisible: false,
         labelPosition: 'right',
         selectLawsPartType: '公民',
         lawsPartTypeIsPson: true,
@@ -318,53 +440,12 @@
           caseNum: '',
           anyou: '',
           lianDate: '',
-          kaitingDate: ''
+          kaitingDate: '',
+          perservationInfoDetail: '',
+          havePreservation: false
         },
         activeName: 'first',
-        options3: [{
-          label: '发诉材料',
-          options: [{
-            value: 'songdahuizheng',
-            label: '送达回证'
-          }, {
-            value: 'yingsutongzhishu',
-            label: '应诉通知书'
-          }, {
-            value: 'chuanpiao',
-            label: '传票'
-          }, {
-            value: 'xzzxtzs',
-            label: '协助执行通知书'
-          }]
-        }, {
-          label: '笔录材料',
-          options: [{
-            value: 'kaitingbilu',
-            label: '开庭笔录'
-          }, {
-            value: 'tiaojiebilu',
-            label: '调解笔录'
-          }, {
-            value: 'xunwenbilu',
-            label: '询问笔录'
-          }]
-        }, {
-          label: '裁判文书',
-          options: [{
-            value: 'baoquancaiding',
-            label: '保全裁定'
-          }, {
-            value: 'chesucaiding',
-            label: '撤诉裁定'
-          }, {
-            value: 'minshitiaojieshu',
-            label: '民事调解书'
-          }, {
-            value: 'minshipanjueshu',
-            label: '民事判决书'
-          }]
-        }],
-        value7: '',
+
         anjianlist: [],
         stepDatas: [
           {description: 'jsifjsjfosj', title: "1"},
@@ -375,7 +456,6 @@
           {description: 'sdfsdf', title: "步骤5"},
         ],
 
-        stepActive: 5
 
 
       }
@@ -392,4 +472,10 @@
   .el-table .success-row {
     background: #f0f9eb;
   }
+
+  .test {
+
+    background-color: #f2f2f2;
+  }
+
 </style>
