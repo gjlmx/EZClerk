@@ -227,38 +227,24 @@
         <el-button type="primary" @click="saveCaseLog">保存</el-button>
       </el-header>
       <div height = "600">
-        <!--<el-steps direction="vertical" :active=caseLogsData.length-1>-->
-          <!--<el-step-->
-            <!--v-for="(caseLog,index) in caseLogsData"-->
-            <!--:description="caseLog.logDeteil"-->
-            <!--:title="caseLog.date+''"-->
-            <!--:key="index"-->
-          <!--&gt;sdfsdfasfsdf</el-step>-->
-        <!--</el-steps>-->
-        <el-table
-          border
-          :data="caseLogsData"
-          >
+        <el-table border :data="caseLogsData">
           <el-table-column
             prop="date"
             label="日期"
             width="180">
           </el-table-column>
-
           <el-table-column
             prop="logDeteil"
             label="纪要">
           </el-table-column>
         </el-table>
       </div>
-
     </el-aside>
   </el-container>
 </template>
 
 <script>
   import DateCalculator from './DateCalculator';
-
   export default {
     components: {DateCalculator},
     created() {
@@ -347,7 +333,7 @@
       addCase() {
         var inputCaseNum = parseInt(this.caseInfoForm.caseNum, 10);
         if (this.$utils.isRealNum(inputCaseNum)) {
-          inputCaseNum = "（2018）鲁0202民初" + inputCaseNum + "号";
+          inputCaseNum = "(2018)鲁0202民初" + inputCaseNum + "号";
           this.caseInfoForm.caseNum = inputCaseNum;
         }
         this.$api.post("saveCase", this.caseInfoForm, r => {
