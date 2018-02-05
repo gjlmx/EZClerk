@@ -45,6 +45,17 @@ public class Utils {
         if (litiPart != null) {
             map.put("tarName", litiPart.getName());
             map.put("dsrdizhi", litiPart.getAddr());
+            String fasuwenshu = "";
+            if (litiPart.getLawsPartType().equals("法人")&&courtCase.getHavePreservation()){
+                fasuwenshu = "民事诉状、当事人送达地址确认书、权利义务告知书、授权委托书、应诉通知书、开庭传票、民事裁定书、法人代表身份证明";//法人有保全
+            }else if(litiPart.getLawsPartType().equals("法人")&&!courtCase.getHavePreservation()){
+                fasuwenshu = "民事诉状、当事人送达地址确认书、权利义务告知书、授权委托书、应诉通知书、开庭传票、法人代表身份证明";//法人无保全
+            }else if(litiPart.getLawsPartType().equals("公民")&&courtCase.getHavePreservation()){
+                fasuwenshu = "民事诉状、当事人送达地址确认书、权利义务告知书、授权委托书、应诉通知书、开庭传票、民事裁定书";//公民有保全
+            }else if(litiPart.getLawsPartType().equals("公民")&&!courtCase.getHavePreservation()){
+                fasuwenshu = "民事诉状、当事人送达地址确认书、权利义务告知书、授权委托书、应诉通知书、开庭传票";//公民无保全
+            }
+            map.put("fasuwenshu",fasuwenshu);
         }
         return map;
     }

@@ -5,6 +5,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import priv.lmx.ezclerk.ezclerkserv.core.Utils;
 import priv.lmx.ezclerk.ezclerkserv.domain.ICaseLogRep;
@@ -84,7 +85,7 @@ public class CaseinfoService {
     }
 
     public List<CourtCase> findAllCases() {
-        return iCourtCaseRep.findAll();
+        return iCourtCaseRep.findAll(new Sort(Sort.Direction.ASC,"liandate"));
     }
 
     public LitiPart saveLP(LitiPart litiPart) {
