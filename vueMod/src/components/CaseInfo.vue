@@ -1,7 +1,6 @@
 <template>
-  <el-container>
+  sfsf
 
-  </el-container>
 </template>
 
 <script>
